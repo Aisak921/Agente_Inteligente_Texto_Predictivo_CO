@@ -1,0 +1,31 @@
+# Dependencias principales del Agente de Texto Predictivo
+# Instalación: pip install -r requirements.txt
+
+# Framework web
+Flask==2.3.3
+Flask-CORS==4.0.0
+
+# Procesamiento de lenguaje natural
+spacy==3.7.2
+# Descargar modelo: python -m spacy download es_core_news_sm
+
+# Procesamiento de datos y ML
+numpy==1.24.3
+pandas==2.0.3
+scikit-learn==1.3.0
+
+# Base de datos
+sqlite3  # Incluido en Python estándar
+
+# Logging y utilidades
+python-dateutil==2.8.2
+requests==2.31.0
+
+# Desarrollo y testing (opcional)
+pytest==7.4.0
+black==23.7.0
+flake8==6.0.0
+
+# Ontología y FOL (opcional para funciones avanzadas)
+rdflib==6.3.2
+owlready2==0.45

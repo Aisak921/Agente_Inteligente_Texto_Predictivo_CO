@@ -1,0 +1,84 @@
+{
+  "sistema": {
+    "nombre": "Agente de Texto Predictivo - Español Colombia",
+    "version": "1.0.0",
+    "descripcion": "Sistema IA especializado en predicción textual para español colombiano",
+    "autor": "Proyecto Universitario - Cartagena",
+    "fecha_creacion": "2025-10-10"
+  },
+  "agente": {
+    "max_sugerencias": 5,
+    "tiempo_limite_ms": 200,
+    "nivel_confianza_minimo": 0.6,
+    "contextos_soportados": ["general", "formal", "informal", "academico"],
+    "modo_debug": false,
+    "logging_level": "INFO"
+  },
+  "base_datos": {
+    "tipo": "sqlite",
+    "nombre_archivo": "corpus_colombiano.db",
+    "backup_automatico": true,
+    "intervalo_backup_horas": 24
+  },
+  "corpus_colombiano": {
+    "expresiones_informales": [
+      "bacano", "chévere", "parce", "mamagallismo", "berraco",
+      "parcero", "rumba", "chimba", "gonorrea", "hijueputa",
+      "mamerto", "piloso", "verraco", "jartera", "guayabo"
+    ],
+    "expresiones_formales": [
+      "cordialmente", "atentamente", "comedidamente",
+      "nos permitimos informar", "quedamos atentos",
+      "muy respetuosamente", "cordial saludo"
+    ],
+    "correcciones_frecuentes": {
+      "estas": "estés",
+      "tambien": "también", 
+      "jose": "José",
+      "camion": "camión",
+      "realizo": "realizó",
+      "analisis": "análisis",
+      "facil": "fácil",
+      "util": "útil",
+      "movil": "móvil",
+      "debil": "débil"
+    },
+    "palabras_con_tilde": [
+      "también", "José", "camión", "análisis", "fácil", 
+      "útil", "móvil", "débil", "está", "será", "mamá", 
+      "papá", "café", "sofá", "menú", "bambú"
+    ]
+  },
+  "api": {
+    "host": "0.0.0.0",
+    "puerto": 5000,
+    "modo_debug": false,
+    "cors_habilitado": true,
+    "rate_limiting": {
+      "habilitado": true,
+      "requests_por_minuto": 100
+    }
+  },
+  "metricas": {
+    "objetivos": {
+      "acceptance_rate_minimo": 75.0,
+      "kss_minimo": 30.0,
+      "precision_minima": 80.0,
+      "latencia_maxima_ms": 300
+    },
+    "alertas": {
+      "habilitadas": true,
+      "email_notificaciones": false
+    }
+  },
+  "algoritmo_busqueda": {
+    "tipo": "A_estrella",
+    "heuristica": {
+      "peso_frecuencia": 0.4,
+      "peso_relevancia": 0.3,
+      "peso_gramatical": 0.3
+    },
+    "cache_habilitado": true,
+    "tamaño_cache": 1000
+  }
+}

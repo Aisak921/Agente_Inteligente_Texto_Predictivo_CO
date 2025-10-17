@@ -1,0 +1,139 @@
+{
+"name": "flujo_agente_texto_predictivo",
+"version": "1.0.0",
+"created_at": "2025-10-10T00:00:00Z",
+"description": "Flujo Percepción → Razonamiento → Acción para agente de texto predictivo (Español Colombia)",
+"components": [
+{
+"id": "sensor_input",
+"type": "sensor.text_input",
+"description": "Captura texto en tiempo real y metadatos",
+"outputs": ["texto", "usuario_id", "timestamp"],
+"next": ["detectar_contexto", "analisis_nlp"]
+},
+{
+"id": "detectar_contexto",
+"type": "processor.context_detector",
+"description": "Clasifica contexto: general/formal/informal/academico",
+"inputs": ["texto"],
+"outputs": ["contexto"],
+"logic": {
+"rules": [
+{"if_contains": ["estimado", "cordialmente", "atentamente"], "set": {"contexto": "formal"}},
+{"if_contains": ["parce", "chévere", "bacano", "jaja"], "set": {"contexto": "informal"}},
+{"if_contains": ["análisis", "investigación", "metodología"], "set": {"contexto": "academico"}},
+{"default": "general"}
+]
+},
+"next": ["consulta_bd_candidatos"]
+},
+{
+"id": "analisis_nlp",
+"type": "processor.spacy",
+"description": "Tokenización y features morfosintácticas",
+"inputs": ["texto"],
+"outputs": ["tokens", "lemmas", "pos"],
+"config": {"model": "es_core_news_sm"},
+"next": ["reglas_fol_correcciones"]
+},
+{
+"id": "consulta_bd_candidatos",
+"type": "data.sqlite_query",
+"description": "Candidatos por contexto desde tabla palabras/expresiones",
+"inputs": ["contexto"],
+"outputs": ["candidatos_sqlite"],
+"config": {
+"db_path": "data/corpus_colombiano.db",
+"query": "SELECT palabra as term, frecuencia, contexto FROM palabras WHERE contexto = :contexto OR contexto='general' ORDER BY frecuencia DESC LIMIT 200;"
+},
+"next": ["reglas_fol_correcciones"]
+},
+{
+"id": "reglas_fol_correcciones",
+"type": "processor.fol_rules",
+"description": "Aplica axiomas: tildes y concordancia",
+"inputs": ["tokens", "contexto"],
+"outputs": ["candidatos_fol"],
+"logic": {
+"axioms": [
+"Palabra(p) ∧ TieneTilde(p) ∧ ¬TildePresente(p) → CorregirTilde(p)",
+"Precede(p1,p2,t) ∧ RequiereConcordancia(p1,p2) ∧ ¬Concordancia(p1,p2) → CorregirConcordancia(p2,p1)"
+]
+},
+"next": ["fusion_candidatos"]
+},
+{
+"id": "fusion_candidatos",
+"type": "processor.merge",
+"description": "Fusiona candidatos de BD y FOL, elimina duplicados",
+"inputs": ["candidatos_sqlite", "candidatos_fol"],
+"outputs": ["candidatos_unificados"],
+"config": {"max_items": 200},
+"next": ["busqueda_a_estrella"]
+},
+{
+"id": "busqueda_a_estrella",
+"type": "planner.a_star",
+"description": "Ranking de sugerencias con heurística (frecuencia, relevancia, gramática)",
+"inputs": ["candidatos_unificados", "contexto", "tokens"],
+"outputs": ["sugerencias_ranked"],
+"config": {
+"heuristic_weights": {"frecuencia": 0.4, "relevancia": 0.3, "gramatica": 0.3},
+"max_sugerencias": 5
+},
+"next": ["actuador_ui", "registro_metricas"]
+},
+{
+"id": "actuador_ui",
+"type": "actuator.ui_suggestions",
+"description": "Renderiza sugerencias y aplica en texto",
+"inputs": ["sugerencias_ranked"],
+"outputs": ["sugerencia_seleccionada"],
+"next": ["feedback_usuario"]
+},
+{
+"id": "feedback_usuario",
+"type": "sensor.user_feedback",
+"description": "Captura aceptación/rechazo de sugerencias",
+"inputs": ["sugerencia_seleccionada", "usuario_id", "contexto"],
+"outputs": ["evento_feedback"],
+"next": ["aprendizaje_online"]
+},
+{
+"id": "aprendizaje_online",
+"type": "processor.online_learning",
+"description": "Ajusta pesos según feedback",
+"inputs": ["evento_feedback"],
+"outputs": ["update_model"],
+"logic": {
+"rules": [
+{"if": {"accion": "acepta"}, "do": "incrementar_peso(sugerencia)"},
+{"if": {"accion": "rechaza"}, "do": "disminuir_peso(sugerencia)"}
+]
+},
+"next": ["registro_metricas"]
+},
+{
+"id": "registro_metricas",
+"type": "logger.metrics",
+"description": "Registra latencia, acceptance, KSS estimado",
+"inputs": ["sugerencias_ranked", "evento_feedback"],
+"outputs": ["metricas"],
+"config": {"persist": "sqlite:data/corpus_colombiano.db"}
+}
+],
+"edges": [
+["sensor_input", "detectar_contexto"],
+["sensor_input", "analisis_nlp"],
+["detectar_contexto", "consulta_bd_candidatos"],
+["analisis_nlp", "reglas_fol_correcciones"],
+["consulta_bd_candidatos", "reglas_fol_correcciones"],
+["reglas_fol_correcciones", "fusion_candidatos"],
+["fusion_candidatos", "busqueda_a_estrella"],
+["busqueda_a_estrella", "actuador_ui"],
+["busqueda_a_estrella", "registro_metricas"],
+["actuador_ui", "feedback_usuario"],
+["feedback_usuario", "aprendizaje_online"],
+["aprendizaje_online", "registro_metricas"]
+]
+}

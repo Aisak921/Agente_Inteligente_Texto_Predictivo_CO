@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🇨🇴 Agente de Texto Predictivo - Español Colombia</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="header__title">🇨🇴 Agente de Texto Predictivo - Español Colombia</h1>
+            <p class="header__description">
+                Sistema inteligente de predicción de texto especializado en español colombiano con corrección ortográfica, 
+                predicción contextual y sugerencias de colombianismos en tiempo real.
+            </p>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Controles -->
+            <div class="controls">
+                <div class="controls__group">
+                    <label for="contexto" class="form-label">Contexto de Escritura:</label>
+                    <select id="contexto" class="form-control controls__select">
+                        <option value="general">General</option>
+                        <option value="formal">Formal</option>
+                        <option value="informal">Informal</option>
+                        <option value="academico">Académico</option>
+                    </select>
+                </div>
+                
+                <div class="controls__group">
+                    <label for="usuario" class="form-label">ID Usuario (opcional):</label>
+                    <input type="text" id="usuario" class="form-control controls__input" placeholder="Ej: usuario123">
+                </div>
+                
+                <div class="controls__buttons">
+                    <button id="btnObtenerSugerencias" class="btn btn--primary">Obtener Sugerencias</button>
+                    <button id="btnLimpiar" class="btn btn--secondary">Limpiar Texto</button>
+                    <button id="btnDemo" class="btn btn--outline">Modo Demo</button>
+                </div>
+            </div>
+
+            <!-- Área Principal -->
+            <div class="workspace">
+                <div class="workspace__editor">
+                    <div class="editor">
+                        <div class="editor__header">
+                            <h3>Editor de Texto</h3>
+                            <div class="editor__status">
+                                <span id="estadoConexion" class="status status--success">
+                                    <span class="status__icon">●</span>
+                                    Agente Activo
+                                </span>
+                            </div>
+                        </div>
+                        <textarea 
+                            id="textoEditor" 
+                            class="editor__textarea" 
+                            placeholder="Comienza a escribir aquí... El agente te ayudará con sugerencias en tiempo real."
+                            rows="12"
+                        ></textarea>
+                        <div class="editor__info">
+                            <span id="contadorPalabras">0 palabras</span>
+                            <span id="ultimaActualizacion">Última actualización: --:--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="workspace__suggestions">
+                    <div class="suggestions">
+                        <div class="suggestions__header">
+                            <h3>Sugerencias en Tiempo Real</h3>
+                            <div class="suggestions__toggle">
+                                <label class="toggle">
+                                    <input type="checkbox" id="autoSugerencias" checked>
+                                    <span class="toggle__slider"></span>
+                                    Auto
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div id="listaSugerencias" class="suggestions__list">
+                            <div class="suggestions__empty">
+                                <div class="suggestions__empty-icon">💡</div>
+                                <p>Comienza a escribir para ver sugerencias personalizadas</p>
+                            </div>
+                        </div>
+                        
+                        <div class="suggestions__legend">
+                            <div class="legend">
+                                <div class="legend__item">
+                                    <span class="legend__icon legend__icon--correction">✓</span>
+                                    <span>Corrección</span>
+                                </div>
+                                <div class="legend__item">
+                                    <span class="legend__icon legend__icon--prediction">→</span>
+                                    <span>Predicción</span>
+                                </div>
+                                <div class="legend__item">
+                                    <span class="legend__icon legend__icon--colombian">🇨🇴</span>
+                                    <span>Colombianismo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Casos Demo -->
+            <div class="demo-cases">
+                <h3>Casos de Demostración</h3>
+                <div class="demo-cases__grid">
+                    <div class="demo-case" data-texto="Hola parce, como estas?" data-contexto="informal">
+                        <div class="demo-case__header">
+                            <span class="demo-case__type">Informal</span>
+                        </div>
+                        <p class="demo-case__text">"Hola parce, como estas?"</p>
+                        <p class="demo-case__description">Corrección de tilde en conversación informal</p>
+                    </div>
+                    
+                    <div class="demo-case" data-texto="Estimado señor Martinez" data-contexto="formal">
+                        <div class="demo-case__header">
+                            <span class="demo-case__type">Formal</span>
+                        </div>
+                        <p class="demo-case__text">"Estimado señor Martinez"</p>
+                        <p class="demo-case__description">Corrección en comunicación formal</p>
+                    </div>
+                    
+                    <div class="demo-case" data-texto="El analisis de datos muestra" data-contexto="academico">
+                        <div class="demo-case__header">
+                            <span class="demo-case__type">Académico</span>
+                        </div>
+                        <p class="demo-case__text">"El analisis de datos muestra"</p>
+                        <p class="demo-case__description">Corrección en texto académico</p>
+                    </div>
+                    
+                    <div class="demo-case" data-texto="Esa película estuvo muy" data-contexto="informal">
+                        <div class="demo-case__header">
+                            <span class="demo-case__type">Predicción</span>
+                        </div>
+                        <p class="demo-case__text">"Esa película estuvo muy"</p>
+                        <p class="demo-case__description">Predicción con colombianismos</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Métricas en Vivo -->
+            <div class="metrics">
+                <h3>Métricas del Sistema en Tiempo Real</h3>
+                <div class="metrics__grid">
+                    <div class="metric-card">
+                        <div class="metric-card__icon">🎯</div>
+                        <div class="metric-card__content">
+                            <div class="metric-card__label">Precisión</div>
+                            <div class="metric-card__value" id="metricaPrecision">89%</div>
+                            <div class="metric-card__progress">
+                                <div class="progress-bar">
+                                    <div class="progress-bar__fill" style="width: 89%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-card__icon">⚡</div>
+                        <div class="metric-card__content">
+                            <div class="metric-card__label">Tiempo Respuesta</div>
+                            <div class="metric-card__value" id="metricaLatencia">143ms</div>
+                            <div class="metric-card__progress">
+                                <div class="progress-bar">
+                                    <div class="progress-bar__fill" style="width: 75%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-card__icon">⌨️</div>
+                        <div class="metric-card__content">
+                            <div class="metric-card__label">Keystroke Savings</div>
+                            <div class="metric-card__value" id="metricaKSS">41%</div>
+                            <div class="metric-card__progress">
+                                <div class="progress-bar">
+                                    <div class="progress-bar__fill" style="width: 41%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-card__icon">👍</div>
+                        <div class="metric-card__content">
+                            <div class="metric-card__label">Tasa Aceptación</div>
+                            <div class="metric-card__value" id="metricaAceptacion">81%</div>
+                            <div class="metric-card__progress">
+                                <div class="progress-bar">
+                                    <div class="progress-bar__fill" style="width: 81%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Agente de Texto Predictivo - Español Colombia. Desarrollado con tecnología avanzada de NLP.</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
